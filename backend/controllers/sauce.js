@@ -1,4 +1,5 @@
 const Sauce = require('../models/sauce');
+const fs = require('fs'); // permet de modifier le système de fichiers (en autre pour gèrer la suppression des images en local)
 
 // Fonction pour créer une sauce. OK
 exports.createSauce = (req, res, next) => {
@@ -61,19 +62,22 @@ exports.modifySauce = (req, res, next) => {
 
 // Fonction de suppression d'une sauce par son auteur. OK
 exports.deleteSauce = (req, res, next) => {
-  Sauce.deleteOne({ _id: req.params.id }).then(
-    () => {
-      res.status(200).json({
-        message: 'Sauce Supprimée!'
+  Sauce.findOne({ _id: req.params.id})
+      .then(sauce => {
+          if (sauce.userId != req.auth.userId) {
+              res.status(401).json({message: 'Accès refusé'});
+          } else {
+              const filename = sauce.imageUrl.split('/images/')[1];
+              fs.unlink(`images/${filename}`, () => {
+                  Sauce.deleteOne({_id: req.params.id})
+                      .then(() => { res.status(200).json({message: 'Objet supprimé !'})})
+                      .catch(error => res.status(401).json({ error }));
+              });
+          }
+      })
+      .catch( error => {
+          res.status(500).json({ error });
       });
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
 };
 
 // Fonction permettant de récupérer toutes les sauces. OK
@@ -90,3 +94,7 @@ exports.getAllSauces = (req, res, next) => {
     }
   );
 };
+
+exports.likeSauce = (req, res, next) => {
+
+}
