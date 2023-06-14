@@ -4,7 +4,8 @@ app.use(express.json());
 const connectDB = require('./dataBase');
 require('dotenv').config();
 
-const userRoutes = require('./routes/user');
+const userRoutes = require('./routes/user'); // Importation des routes users
+const sauceRoutes = require('./routes/sauce') // Importation des routes sauces
 
 connectDB();
 
@@ -16,5 +17,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/auth', userRoutes); // Enregistrement des routes utilisateurs
+app.use('api/sauces', sauceRoutes); // Enregistrement des routes sauces
 
-module.exports = app;
+module.exports = app; // Export de l'application express
