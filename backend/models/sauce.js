@@ -14,4 +14,9 @@ const sauceSchema = mongoose.Schema({
     usersDisliked: {type: [String]},
 });
 
+{
+    timestamps: true // ajout des propriétés: date de création et de modification
+}
+
+
 module.exports = mongoose.model('Sauce', sauceSchema);

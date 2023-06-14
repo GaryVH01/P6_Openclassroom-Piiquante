@@ -1,31 +1,25 @@
 const Sauce = require('../models/sauce');
 
+// Fonction pour créer une sauce. OK
 exports.createSauce = (req, res, next) => {
-  delete req.body._id;
+  const sauceObject = JSON.parse(req.body.sauce);
+  delete sauceObject._id;
+  delete sauceObject._userId;
   const sauce = new Sauce({
-    ...req.body,
+    ...sauceObject,
     likes: 0,
     dislikes: 0,
-    usersLiked: [],
     usersDisliked: [],
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename
-      }`,
+    usersLiked: [],
+    userId: req.auth.userId,
+    imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
   });
-  sauce.save().then(
-    () => {
-      res.status(201).json({
-        message: 'Post enregistré avec succès!'
-      });
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+  sauce.save()
+    .then(() => res.status(201).json({ message: "Sauce enregistrée !" }))
+    .catch((error) => res.status(400).json({ error }));
 };
 
+//Fonction pour retrouver une sauce en particulier. OK
 exports.getOneSauce = (req, res, next) => {
   Sauce.findOne({
     _id: req.params.id
@@ -42,30 +36,30 @@ exports.getOneSauce = (req, res, next) => {
   );
 };
 
+// Fonction pour modifier une sauce. OK
 exports.modifySauce = (req, res, next) => {
-  const sauce = new Sauce({
-    _id: req.params.id,
-    title: req.body.title,
-    description: req.body.description,
-    imageUrl: req.body.imageUrl,
-    price: req.body.price,
-    userId: req.body.userId
-  });
-  Sauce.updateOne({ _id: req.params.id }, sauce).then(
-    () => {
-      res.status(201).json({
-        message: 'Sauce modifiée avec succès!'
+  const sauceObject = req.file ? {
+      ...JSON.parse(req.body.sauce),
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+  } : { ...req.body };
+
+  delete sauceObject._userId;
+  Sauce.findOne({_id: req.params.id})
+      .then((sauce) => {
+          if (sauce.userId != req.auth.userId) {
+              res.status(401).json({ message : 'Not authorized'});
+          } else {
+              Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
+              .then(() => res.status(200).json({message : 'Objet modifié!'}))
+              .catch(error => res.status(401).json({ error }));
+          }
+      })
+      .catch((error) => {
+          res.status(400).json({ error });
       });
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
 };
 
+// Fonction de suppression d'une sauce par son auteur. OK
 exports.deleteSauce = (req, res, next) => {
   Sauce.deleteOne({ _id: req.params.id }).then(
     () => {
@@ -82,6 +76,7 @@ exports.deleteSauce = (req, res, next) => {
   );
 };
 
+// Fonction permettant de récupérer toutes les sauces. OK
 exports.getAllSauces = (req, res, next) => {
   Sauce.find().then(
     (sauces) => {
