@@ -10,7 +10,7 @@ exports.createSauce = (req, res, next) => {
   delete sauceObject._userId; // suppression de l'id de l'user car on souhaite utiliser l'userId du token d'authentification
   const sauce = new Sauce({
     ...sauceObject, // utilisation du raccourci spread (opérateur) pour copier les champs du body de la requête
-    userId: req.auth.userId,
+    //userId: req.auth.userId,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`,
