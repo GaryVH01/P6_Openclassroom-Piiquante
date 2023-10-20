@@ -15,20 +15,15 @@ Implémentation du CRUD:
 - possibilité de se connecter avec un token d'authentification
 - possibilité de liker, disliker, lire, modifier ou supprimer une sauce.
 
-** Comment lancer les serveurs back et front ? **
+--- Comment exécuter le back et le front ? ---
 
-Pour la partie Front, ouvrir un premier terminal puis exécuter :
-cd frontend
-npm start
-Le serveur retourne le port sur lequel écouter. Il devrait écouter sur le port 4200.
-http://localhost:4200/ dans votre navigateur.
+- Pour la partie Front, ouvrir un premier terminal puis exécuter :
+  cd frontend
+  npm start
+  Le serveur retourne le port sur lequel écouter. Il devrait écouter sur le port 4200.
+  http://localhost:4200/ dans votre navigateur.
 
-<<<<<<< HEAD
-Pour la partie backend, ouvir un second terminal puis exécuter :
-=======
-Pour la partie backend exécutez :
-
-> > > > > > > 8e772a2 (add frontend file)
-> > > > > > > cd backend
-> > > > > > > nodemon server
-> > > > > > > le serveur s'exécutera sur le port 3000
+- Pour la partie backend, ouvir un second terminal puis exécuter :
+  cd backend
+  nodemon server
+  le serveur s'exécutera sur le port 3000
